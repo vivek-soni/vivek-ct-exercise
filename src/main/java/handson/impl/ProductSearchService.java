@@ -1,14 +1,15 @@
 package handson.impl;
 
+import java.util.concurrent.CompletionStage;
+
 import io.sphere.sdk.client.SphereClient;
 import io.sphere.sdk.models.LocalizedStringEntry;
 import io.sphere.sdk.products.ProductProjection;
 import io.sphere.sdk.products.attributes.StringAttributeType;
-import io.sphere.sdk.products.queries.ProductProjectionQuery;
+import io.sphere.sdk.products.search.ProductAttributeFacetedSearchSearchModel;
 import io.sphere.sdk.products.search.ProductProjectionSearch;
+import io.sphere.sdk.products.search.ProductProjectionSearchModel;
 import io.sphere.sdk.search.PagedSearchResult;
-
-import java.util.concurrent.CompletionStage;
 
 /**
  * This class provides search operations for {@link ProductProjection}s.
@@ -29,6 +30,8 @@ public class ProductSearchService extends AbstractService {
 		// TODO 8.1 Perform a full-text search
 
 		return client.execute(ProductProjectionSearch.ofCurrent().withText(searchText));
+		
+		
 	}
 
 	/**
@@ -42,6 +45,10 @@ public class ProductSearchService extends AbstractService {
 	public CompletionStage<PagedSearchResult<ProductProjection>> facetSearch(final String attributeName,
 			String attributeValue) {
 		//return client.execute(ProductProjectionSearch.ofCurrent().facetedSearch().)
-		return null;
+		final ProductAttributeFacetedSearchSearchModel attributeModel = ProductProjectionSearchModel.of().facetedSearch().allVariants().attribute();
+		return client.execute(ProductProjectionSearch.ofStaged()
+				.plusFacetedSearch(attributeModel.ofString(attributeName).is(attributeValue)));
+		       // .plusFacetedSearch(attributeModel.ofString(attributeName).is(attributeValue));
+		
 	}
 }
